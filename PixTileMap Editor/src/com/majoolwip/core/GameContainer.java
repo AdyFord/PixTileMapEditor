@@ -98,7 +98,7 @@ public class GameContainer implements Runnable
 				game.render(this, renderer);
 				if(lightEnable || dynamicLights){ renderer.drawLightArray(); renderer.flushMaps();}
 				renderer.setTranslate(false);
-				if(debug) renderer.drawString("FPS-" + fps, 0xffffffff, 0, 0);
+				if(debug) renderer.drawString("FPS-" + fps, 0xffffffff, 0, 0, false, false);
 				renderer.setTranslate(true);
 				
 				window.update();

@@ -31,4 +31,17 @@ public enum Font
 			}
 		}
 	}
+	
+	public static int getStringSize(Font font, String text)
+	{
+		text = text.toUpperCase();
+
+		int offset = 0;
+		for (int i = 0; i < text.length(); i++)
+		{
+			int unicode = text.codePointAt(i) - 32;
+			offset += font.widths[unicode];
+		}
+		return offset;
+	}
 }

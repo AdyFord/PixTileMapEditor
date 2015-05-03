@@ -75,11 +75,18 @@ public class Renderer
 		lightMap[x + y * width] = Pixel.getMax(color, lightMap[x + y * width]);
 	}
 
-	public void drawString(String text, int color, int offX, int offY)
+	public void drawString(String text, int color, int offX, int offY, boolean centerX, boolean centerY)
 	{
 		text = text.toUpperCase();
-
+		
 		int offset = 0;
+		
+
+		if(centerX)
+		{
+			offset = (int)(-Font.getStringSize(font, text) / 2f);
+		}
+		
 		for (int i = 0; i < text.length(); i++)
 		{
 			int unicode = text.codePointAt(i) - 32;
@@ -89,7 +96,16 @@ public class Renderer
 				for (int y = 1; y < font.image.height; y++)
 				{
 					if (font.image.pixels[(x + font.offsets[unicode]) + y * font.image.width] == 0xffffffff)
-						setPixel(x + offX + offset, y + offY - 1, color, ShadowType.NONE);
+					{
+						if(centerY)
+						{
+							setPixel(x + offX + offset, y + offY - 1 - (font.image.height / 2), color, ShadowType.NONE);
+						}
+						else
+						{
+							setPixel(x + offX + offset, y + offY - 1, color, ShadowType.NONE);
+						}
+					}
 				}
 			}
 
