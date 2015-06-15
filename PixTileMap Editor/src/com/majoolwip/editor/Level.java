@@ -1,7 +1,6 @@
 package com.majoolwip.editor;
 
 import java.awt.FileDialog;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,10 +11,10 @@ import java.io.IOException;
 
 import com.majoolwip.core.GameContainer;
 import com.majoolwip.core.Renderer;
-import com.majoolwip.core.fx.Pixel;
-import com.majoolwip.core.fx.ShadowType;
+import com.majoolwip.core.fx.Image;
 import com.majoolwip.core.gui.Button;
 import com.majoolwip.core.gui.GUIContainer;
+import com.majoolwip.core.gui.TileSelector;
 
 public class Level
 {
@@ -25,7 +24,9 @@ public class Level
 	private Camera camera;
 	private int tileW = 16, tileH = 16;
 	private GUIContainer guiC = new GUIContainer();
-
+	private TileSheet tileSheet;
+	private TileSelector ts;
+	
 	public Level(int levelW, int levelH)
 	{
 		this.levelW = levelW;
@@ -34,6 +35,10 @@ public class Level
 		camera = new Camera();
 		guiC.addGUIObject(new Button("Save", null, 0, 0, 32, 16));
 		guiC.addGUIObject(new Button("Load", null, 32, 0, 32, 16));
+		
+		tileSheet = new TileSheet("/Tileset.png", 16);
+		ts = new TileSelector(tileSheet);
+		guiC.addGUIObject(ts);
 	}
 
 	public void init(GameContainer gc)
@@ -62,10 +67,9 @@ public class Level
 				loadMap(fd.getFile());
 			}
 		}
-
-		if (gc.getInput().isButtonPressed(MouseEvent.BUTTON1))
+		else if (gc.getInput().isButtonPressed(MouseEvent.BUTTON1))
 		{
-			setTile((gc.getInput().getMouseX() + (int) (camera.getCamX() + 0.5f)) / tileW, (gc.getInput().getMouseY() + (int) (camera.getCamY() + 0.5f)) / tileH, 1);
+			setTile((gc.getInput().getMouseX() + (int) (camera.getCamX() + 0.5f)) / tileW, (gc.getInput().getMouseY() + (int) (camera.getCamY() + 0.5f)) / tileH, ts.getSelected());
 		}
 	}
 
@@ -77,12 +81,12 @@ public class Level
 		{
 			for (int y = (int) (camera.getCamY()) / tileH; y < ((int) (camera.getCamY() + gc.getHeight()) / tileH) + 1; y++)
 			{
-				if (getTile(x, y) == 0)
+				if(x < 0 || x > levelW || y < 0 || y > levelH)
+					continue;
+				Image image = tileSheet.getTileImage(tiles[x + y * levelW]);
+				if(image != null)
 				{
-					r.drawRect(x * tileW, y * tileH, tileW, tileH, Pixel.WHITE, ShadowType.NONE);
-				} else
-				{
-					r.drawFillRect(x * tileW, y * tileH, tileW, tileH, Pixel.RED, ShadowType.NONE);
+					r.drawImage(image , x * tileW, y * tileH);
 				}
 			}
 		}

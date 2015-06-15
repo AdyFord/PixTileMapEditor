@@ -29,4 +29,11 @@ public class Image
 		
 		image.flush();
 	}
+	
+	public Image(int w, int h, int[] p)
+	{
+		this.width = w;
+		this.height = h;
+		this.pixels = p;
+	}
 }
