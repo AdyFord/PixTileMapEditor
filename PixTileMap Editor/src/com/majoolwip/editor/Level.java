@@ -13,6 +13,7 @@ import com.majoolwip.core.GameContainer;
 import com.majoolwip.core.Renderer;
 import com.majoolwip.core.fx.Image;
 import com.majoolwip.core.gui.Button;
+import com.majoolwip.core.gui.CollisionPanel;
 import com.majoolwip.core.gui.GUIContainer;
 import com.majoolwip.core.gui.TileSelector;
 
@@ -20,18 +21,21 @@ public class Level
 {
 	private int levelW, levelH;
 	private int[] tiles;
+	private int[] collision;
 	private FileDialog fd = null;
 	private Camera camera;
 	private int tileW = 16, tileH = 16;
 	private GUIContainer guiC = new GUIContainer();
 	private TileSheet tileSheet;
 	private TileSelector ts;
+	private CollisionPanel cp;
 	
 	public Level(int levelW, int levelH)
 	{
 		this.levelW = levelW;
 		this.levelH = levelH;
 		tiles = new int[levelW * levelH];
+		collision = new int[levelW * levelH];
 		camera = new Camera();
 		guiC.addGUIObject(new Button("Save", null, 0, 0, 32, 16));
 		guiC.addGUIObject(new Button("Load", null, 32, 0, 32, 16));
@@ -39,11 +43,15 @@ public class Level
 		tileSheet = new TileSheet("/Tileset.png", 16);
 		ts = new TileSelector(tileSheet);
 		guiC.addGUIObject(ts);
+		
+		cp = new CollisionPanel();
+		guiC.addGUIObject(cp);
 	}
 
 	public void init(GameContainer gc)
 	{
 		fd = new FileDialog(gc.getWindow().getFrame());
+		ts.init(gc);
 	}
 
 	public void update(GameContainer gc, float dt)
@@ -51,6 +59,16 @@ public class Level
 		camera.update(gc, dt);
 		guiC.update(gc, dt);
 
+		if(cp.isVisible())
+		{
+			ts.setVisible(false);
+		}
+		
+		if(ts.isVisible())
+		{
+			cp.setVisible(false);
+		}
+		
 		if (guiC.getOuputName() != null)
 		{
 			if (guiC.getOuputName().equals("Save"))
@@ -69,7 +87,14 @@ public class Level
 		}
 		else if (gc.getInput().isButtonPressed(MouseEvent.BUTTON1))
 		{
-			setTile((gc.getInput().getMouseX() + (int) (camera.getCamX() + 0.5f)) / tileW, (gc.getInput().getMouseY() + (int) (camera.getCamY() + 0.5f)) / tileH, ts.getSelected());
+			if(ts.isVisible())
+			{
+				setTile((gc.getInput().getMouseX() + (int) (camera.getCamX() + 0.5f)) / tileW, (gc.getInput().getMouseY() + (int) (camera.getCamY() + 0.5f)) / tileH, ts.getSelected());
+			}
+			else if(cp.isVisible())
+			{
+				setCollision((gc.getInput().getMouseX() + (int) (camera.getCamX() + 0.5f)) / tileW, (gc.getInput().getMouseY() + (int) (camera.getCamY() + 0.5f)) / tileH, cp.getValue());
+			}
 		}
 	}
 
@@ -87,6 +112,11 @@ public class Level
 				if(image != null)
 				{
 					r.drawImage(image , x * tileW, y * tileH);
+				}
+				
+				if(cp.isVisible())
+				{
+					r.drawString("" + collision[x + y * levelW], 0xff111111, x * tileW + (tileW / 2), y * tileH + (tileH / 2), true, true);
 				}
 			}
 		}
@@ -110,6 +140,7 @@ public class Level
 			for (int i = 0; i < tiles.length; i++)
 			{
 				out.write(tiles[i]);
+				out.write(collision[i]);
 			}
 
 			out.close();
@@ -138,6 +169,7 @@ public class Level
 			for (int i = 0; i < tiles.length; i++)
 			{
 				tiles[i] = in.read();
+				collision[i] = in.read();
 			}
 
 			in.close();
@@ -148,17 +180,31 @@ public class Level
 		}
 	}
 
-	private int getTile(int x, int y)
+	public int getTile(int x, int y)
 	{
 		if (x < 0 || x >= levelW || y < 0 || y >= levelH)
 			return -1;
 		return tiles[x + y * levelW];
 	}
 
-	private void setTile(int x, int y, int value)
+	public void setTile(int x, int y, int value)
 	{
 		if (x < 0 || x >= levelW || y < 0 || y >= levelH)
 			return;
 		tiles[x + y * levelW] = value;
+	}
+	
+	public int getCollision(int x, int y)
+	{
+		if (x < 0 || x >= levelW || y < 0 || y >= levelH)
+			return -1;
+		return collision[x + y * levelW];
+	}
+
+	public void setCollision(int x, int y, int value)
+	{
+		if (x < 0 || x >= levelW || y < 0 || y >= levelH)
+			return;
+		collision[x + y * levelW] = value;
 	}
 }

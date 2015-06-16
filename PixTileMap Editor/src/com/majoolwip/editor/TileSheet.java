@@ -52,5 +52,9 @@ public class TileSheet
 		this.tileS = tileS;
 	}
 	
+	public int getTilesLength()
+	{
+		return tiles.length;
+	}
 	
 }
