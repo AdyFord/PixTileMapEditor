@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 
 import com.majoolwip.core.GameContainer;
 import com.majoolwip.core.Renderer;
+import com.majoolwip.core.fx.Image;
 import com.majoolwip.core.fx.Pixel;
 import com.majoolwip.core.fx.ShadowType;
 import com.majoolwip.editor.TileSheet;
@@ -94,7 +95,12 @@ public class TileSelector extends AbstractGUI
 			{
 				for (int y = 0; y < (gc.getHeight() / tileSheet.getTileS()) - 5; y++)
 				{
-					r.drawImage(tileSheet.getTileImage((x + y * 5) + (tempPage * (5 * ((gc.getHeight() / tileSheet.getTileS()) - 5)))), x * tileSheet.getTileS() + (gc.getWidth() - tileSheet.getTileS() * 5), y * tileSheet.getTileS());
+					Image image = tileSheet.getTileImage((x + y * 5) + (tempPage * (5 * ((gc.getHeight() / tileSheet.getTileS()) - 5)))); 
+					
+					if(image == null)
+						continue;
+					
+					r.drawImage(image, x * tileSheet.getTileS() + (gc.getWidth() - tileSheet.getTileS() * 5), y * tileSheet.getTileS());
 
 					if ((x + y * 5) + (tempPage * (5 * ((gc.getHeight() / tileSheet.getTileS()) - 5))) == selected)
 					{

@@ -35,7 +35,7 @@ public class TileSheet
 	
 	public Image getTileImage(int id)
 	{
-		if(id < 0)
+		if(id < 0 || id >= tiles.length)
 		{
 			return null;
 		}

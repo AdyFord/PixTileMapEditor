@@ -10,7 +10,7 @@ public class MainComponent extends AbstractGame
 
 	public MainComponent()
 	{
-		level = new Level(100, 100);
+		level = new Level(15, 15);
 	}
 
 	@Override

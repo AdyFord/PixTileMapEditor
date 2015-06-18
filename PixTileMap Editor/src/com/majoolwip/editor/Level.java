@@ -40,7 +40,7 @@ public class Level
 		guiC.addGUIObject(new Button("Save", null, 0, 0, 32, 16));
 		guiC.addGUIObject(new Button("Load", null, 32, 0, 32, 16));
 		
-		tileSheet = new TileSheet("/Tileset.png", 16);
+		tileSheet = new TileSheet("/tileSheet.png", 16);
 		ts = new TileSelector(tileSheet);
 		guiC.addGUIObject(ts);
 		
@@ -106,7 +106,7 @@ public class Level
 		{
 			for (int y = (int) (camera.getCamY()) / tileH; y < ((int) (camera.getCamY() + gc.getHeight()) / tileH) + 1; y++)
 			{
-				if(x < 0 || x > levelW || y < 0 || y > levelH)
+				if(x < 0 || x >= levelW || y < 0 || y >= levelH)
 					continue;
 				Image image = tileSheet.getTileImage(tiles[x + y * levelW]);
 				if(image != null)
@@ -145,6 +145,7 @@ public class Level
 
 			out.close();
 
+			System.out.println("worked");
 		} catch (IOException e)
 		{
 			e.printStackTrace();
@@ -154,7 +155,10 @@ public class Level
 	private void loadMap(String path)
 	{
 		if (path == null)
+		{
+			System.out.println("failed");
 			return;
+		}
 
 		try
 		{
@@ -173,7 +177,6 @@ public class Level
 			}
 
 			in.close();
-
 		} catch (IOException e)
 		{
 			e.printStackTrace();
